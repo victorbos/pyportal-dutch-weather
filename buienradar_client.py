@@ -74,11 +74,12 @@ class BuienradarClient:
             except Exception as e:
                 sys.print_exception(e)
                 print("exception requesting buienradar; will retry")
+                time.sleep(5)
                 continue
 
             break
 
-    def draw(self):
+    def draw(self, wait_time):
         self.update()
         self.__draw.reset()
 
@@ -86,6 +87,11 @@ class BuienradarClient:
         self.__draw_chart()
 
         self.__draw.show()
+
+        if self.__has_rain():
+            time.sleep(wait_time)
+        else:
+            time.sleep(5)
 
     def __draw_chart(self):
         start_x = 30
@@ -127,6 +133,12 @@ class BuienradarClient:
         elif start_rain:
             text = start_rain[1] + ' vanaf ' + start_rain[0]
         else:
-            text = 'Geen neerslag tot ' + self.__rain_list[-1].time
+            text = 'Droog tot ' + self.__rain_list[-1].time
 
-        self.__draw.draw_text(text, 'medium', 0xFFFF00, 20, 20)
+        if start_rain:
+            self.__draw.draw_text(text, 'medium', 0xFFFF00, 20, 20)
+        else:
+            self.__draw.draw_text(text, 'large', 0xFFFF00, 85, 100)
+
+    def __has_rain(self):
+        any(rain.bucket > 0 for rain in self.__rain_list)

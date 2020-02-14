@@ -36,6 +36,7 @@ class Draw:
         txt.x=x
         txt.y=y
         self.__display_group.append(txt)
+        return txt
 
     def draw_wrapped(self, text, font, color, x, start_y, max_chars, spacing):
         lines = self.wrap_nicely(text, max_chars)
@@ -68,3 +69,5 @@ class Draw:
     def draw_bar(self, x, y, width, height, fill):
         bar = rect.Rect(x, y, width, height, fill=fill)
         self.__display_group.append(bar)
+
+    

@@ -28,7 +28,11 @@ class Weather:
         self.lv = weerlive_response['lv']
         self.luchtd = weerlive_response['luchtd'].strip()
         self.image = weerlive_response['image']
-        self.alarmtxt = weerlive_response.get('alarmtxt')
+
+        if weerlive_response['alarm'] != '0':
+            self.alarmtxt = weerlive_response.get('alarmtxt')[:100]
+        else:
+            self.alarmtxt = ''
 
         # forecasts
         self.verwachting = weerlive_response['verw']
@@ -82,11 +86,12 @@ class WeerliveClient:
             except Exception as e:
                 sys.print_exception(e)
                 print("exception requesting weerlive; will retry")
+                time.sleep(5)
                 continue
             
             break
 
-    def draw_current(self):
+    def draw_current(self, wait_time):
         self.update()
         
         self.__draw.reset()
@@ -118,13 +123,14 @@ class WeerliveClient:
         y += 25
  
         if self.__weather.alarmtxt:
-            self.__draw.draw_wrapped(self.__weather.alarmtxt, 'large', 0xFF0000, 10, y, 30, 30)
+            self.__draw.draw_wrapped(self.__weather.alarmtxt, 'medium', 0xFF0000, 10, y, 50, 25)
         else:
             self.__draw.draw_text('geen waarschuwingen', 'medium', 0xFFFF00, 10, y)
             
         self.__draw.show()
+        time.sleep(wait_time)
 
-    def draw_forecasts(self):
+    def draw_forecasts(self, wait_time):
         self.update()
         self.__draw.reset() 
 
@@ -166,3 +172,4 @@ class WeerliveClient:
         self.__draw.draw_text(self.__weather.d2wind, 'medium', 0xFFFFFF, x3, y)
 
         self.__draw.show()
+        time.sleep(wait_time)
